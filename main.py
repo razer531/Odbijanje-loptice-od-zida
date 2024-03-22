@@ -20,12 +20,10 @@ def calc_theta(vx, vy):
 class Lopta:
     global k
     
-    def __init__(self, x0, y0, v0, theta, radijus):
+    def __init__(self, x0, y0, v0, theta):
         self.x, self.y = x0, y0
         self.theta = theta #pocetni kut nagiba
         self.v = v0
-        self.radijus = radijus
-        self.lupio = False
         
     def kreiraj_putanju(self):
 
@@ -85,34 +83,16 @@ class Lopta:
 
          
 
-
-'''
-#Crtamo loptu na početku
-def crtaj_loptu(ax, x, y, r):
-    circle = Circle((x, y), radius = r, edgecolor='r', facecolor='r')
-    ax.add_patch(circle)
-
-
-krug = Circle((lopta.koord[0], lopta.koord[1]), radius = lopta.radijus, edgecolor='r', facecolor='r')  
-ax.add_patch(krug) 
-ax.set_aspect('equal', adjustable='box')
-'''
-
-
-
 #Inicijaliziramo početne parametre
 delta_t = 0.015
 x_zid, y_zid = 9, 9
 k = 0.7
 
-t_start = 0
-t_end = 2
-num_it = ceil((t_end-t_start)/delta_t)
+lopta1 = Lopta(x0 = 0, y0 = 2, v0 = 10, theta = 45)
+lopta2 = Lopta(x0 = 0, y0 = 2, v0 = 10, theta = 60)
+x1,y1 = lopta1.simulacija()
+x2,y2 = lopta2.simulacija()
 
-lopta = Lopta(radijus = 0.5, x0 = 0, y0 = 2, v0 = 10, theta = 45)
-
-x,y = lopta.simulacija()
-print(lopta.x, lopta.y)
 fig, ax = plt.subplots()
 ax.set_xlim(0, 10)
 ax.set_ylim(0, 10)
@@ -120,17 +100,19 @@ ax.set_ylim(0, 10)
 #Crtamo zid
 ax.plot([x_zid, x_zid], [0,y_zid], color = "black", linewidth = 5)
 
-putanja, = ax.plot(x[0], y[0], '-o', color = "red", markersize = 5)
+putanja1, = ax.plot(x1[0], y1[0], '-o', color = "red", markersize = 5)
+putanja2, = ax.plot(x2[0], y2[0], '-o', color = "red", markersize = 5)
 
 def update(frame):
-    global putanja
+    global putanja1, putanja2
     
-    novi_x = x[frame]
-    novi_y = y[frame]
-    putanja.set_data(novi_x, novi_y)
+    novi_x = x1[frame]
+    novi_y = y1[frame]
+    putanja1.set_data(x1[frame], y1[frame])
+    putanja2.set_data(x2[frame], y2[frame])
 
     
 
-animation = FuncAnimation(fig, update, frames=range(300), interval=1)
+animation = FuncAnimation(fig, update, frames=range(len(max(x1,x2))), interval=1)
 
 plt.show()
