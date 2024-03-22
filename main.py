@@ -1,4 +1,4 @@
-import numpy as np
+import os
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 from matplotlib.patches import Circle
@@ -18,11 +18,11 @@ def calc_theta(vx, vy):
 #Kreiramo klasu lopta 
 
 class Lopta:
-    global k
+    global k, delta_t, x_zid
     
-    def __init__(self, x0, y0, v0, theta):
+    def __init__(self, x0, y0, v0, theta0):
         self.x, self.y = x0, y0
-        self.theta = theta #pocetni kut nagiba
+        self.theta = theta0 #pocetni kut nagiba
         self.v = v0
         
     def kreiraj_putanju(self):
@@ -31,9 +31,6 @@ class Lopta:
     #uvjetima: x0, y0, v0, theta(kut početnog izbačaja u stupnjevima), delta_t.
     #Vrijednosti x i y, kao i vy, računate su Eulerovom metodom. vx posebno ne računamo jer je ono 
     #konstatno za danu putanju.
-        
-        global delta_t 
-        global x_zid
 
         vx0, vy0 = self.v*cos(radians(self.theta)), self.v*sin(radians(self.theta))
         
@@ -84,35 +81,55 @@ class Lopta:
          
 
 #Inicijaliziramo početne parametre
+
+
+def glavni_program(n):
+    
+    print()
+    loptice = []
+    for i in range(n):
+        v = int(input(f"Početna brzina {i+1}. loptice: "))
+        theta = int(input(f"Početni kut nagiba {i+1}. loptice: "))
+        print()
+        lopta = Lopta(x0 = 0, y0 = 2, v0 = v, theta0 = theta)
+        loptice.append(lopta)
+
+    fig, ax = plt.subplots()
+    ax.set_xlim(0, 10)
+    ax.set_ylim(0, 10)
+
+    #Crtamo zid
+    ax.plot([x_zid, x_zid], [0,y_zid], color = "black", linewidth = 5)
+
+    putanje = []
+    x = []
+    y = []
+
+    for i in range(n):
+        x_c, y_c = loptice[i].simulacija()
+        x.append(x_c)
+        y.append(y_c)
+
+        putanja, = ax.plot(x[i][0], y[i][0], '-o', color = "red", markersize = 5) 
+        putanje.append(putanja)
+
+    def update(frame):
+        for i in range(n):
+            putanje[i].set_data(x[i][frame], y[i][frame])
+        
+    num_it = max([len(t) for t in x])
+    animation = FuncAnimation(fig, update, frames=range(num_it), interval=1)
+
+    plt.show()
+
+
+#Inicijaliziramo početne parametre
 delta_t = 0.015
 x_zid, y_zid = 9, 9
-k = 0.7
+k = 0.710
 
-lopta1 = Lopta(x0 = 0, y0 = 2, v0 = 10, theta = 45)
-lopta2 = Lopta(x0 = 0, y0 = 2, v0 = 10, theta = 60)
-x1,y1 = lopta1.simulacija()
-x2,y2 = lopta2.simulacija()
+os.system("clear")
 
-fig, ax = plt.subplots()
-ax.set_xlim(0, 10)
-ax.set_ylim(0, 10)
+n = int(input("Odaberite broj loptica: "))
+glavni_program(n)
 
-#Crtamo zid
-ax.plot([x_zid, x_zid], [0,y_zid], color = "black", linewidth = 5)
-
-putanja1, = ax.plot(x1[0], y1[0], '-o', color = "red", markersize = 5)
-putanja2, = ax.plot(x2[0], y2[0], '-o', color = "red", markersize = 5)
-
-def update(frame):
-    global putanja1, putanja2
-    
-    novi_x = x1[frame]
-    novi_y = y1[frame]
-    putanja1.set_data(x1[frame], y1[frame])
-    putanja2.set_data(x2[frame], y2[frame])
-
-    
-
-animation = FuncAnimation(fig, update, frames=range(len(max(x1,x2))), interval=1)
-
-plt.show()
