@@ -1,8 +1,9 @@
 import os
+import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 from matplotlib.patches import Circle
-from math import ceil, sin, cos, radians, degrees, sqrt, atan
+from math import sin, cos, radians, degrees, sqrt, atan, floor
 
 
 def calc_theta(vx, vy):
@@ -21,9 +22,11 @@ class Lopta:
     global k, delta_t, x_zid
     
     def __init__(self, x0, y0, v0, theta0):
+
         self.x, self.y = x0, y0
-        self.theta = theta0 #pocetni kut nagiba
+        self.theta = theta0 #kut nagiba
         self.v = v0
+        self.greska = 0 #odstupanje loptice od početne visine kad se vrati na x = 0
         
     def kreiraj_putanju(self):
 
@@ -40,9 +43,12 @@ class Lopta:
         while True:
 
             if self.x <= x_zid and self.x >= 0 and self.y >= 0.1:
-                x_lista.append(x_lista[-1] + delta_t*vx0)
+                
                 vy_lista.append(vy_lista[-1] + delta_t*(-9.81))
+
+                x_lista.append(x_lista[-1] + delta_t*vx0)
                 y_lista.append(y_lista[-1] + delta_t*vy_lista[-1])
+                
                 self.x, self.y = x_lista[-1], y_lista[-1]
                 continue
             
@@ -79,29 +85,30 @@ class Lopta:
             x_lista.extend(x_c)
             y_lista.extend(y_c)
 
-        return x_lista, y_lista
+        self.greska = y_lista[-1] - y_lista[0]
+        return x_lista, y_lista 
 
          
 
-#Inicijaliziramo početne parametre
-
-
-def glavni_program(n):
+def animacija_vise_loptica(): #n je broj loptica
     
     print()
-    loptice = []
+    n = int(input("Odaberite broj loptica: "))
+    
+    lopte = []
     for i in range(n):
-        v = int(input(f"Početna brzina {i+1}. loptice: "))
-        theta = int(input(f"Početni kut nagiba {i+1}. loptice: "))
+        v = float(input(f"Početna brzina {i+1}. loptice: "))
+        theta = float(input(f"Početni kut nagiba {i+1}. loptice: "))
         print()
         lopta = Lopta(x0 = 0, y0 = 2, v0 = v, theta0 = theta)
-        loptice.append(lopta)
+        lopte.append(lopta)
 
     fig, ax = plt.subplots()
-    ax.set_xlim(0, 10)
+    ax.set_xlim(0, 30)
     ax.set_ylim(0, 10)
 
     #Crtamo zid
+
     ax.plot([x_zid, x_zid], [0,y_zid], color = "black", linewidth = 5)
 
     putanje = []
@@ -109,7 +116,7 @@ def glavni_program(n):
     y = []
 
     for i in range(n):
-        x_c, y_c = loptice[i].simulacija()
+        x_c, y_c = lopte[i].simulacija()
         x.append(x_c)
         y.append(y_c)
 
@@ -125,17 +132,86 @@ def glavni_program(n):
 
     plt.show()
 
-    return loptice
+    return lopte
+
+def animiraj_loptu(lopta):
+    global x_zid, y_zid
+    
+    x, y = lopta.simulacija()
+
+    fig, ax = plt.subplots()
+    ax.set_xlim(0, 20)
+    ax.set_ylim(0, 20)
+    #Crtamo zid
+    ax.plot([x_zid, x_zid], [0,y_zid], color = "black", linewidth = 5)
+
+    #Crtamo pravac y = y0
+    ax.plot([0, x_zid], [2, 2], color = "red", linestyle = "dashed")
+    putanja, = ax.plot(x[0], y[0], '-o', color = "red", markersize = 5)
+
+    def update(frame):
+        novi_x = x[frame]
+        novi_y = y[frame]
+        putanja.set_data(novi_x, novi_y)
+
+    animation = FuncAnimation(fig, update, frames=range(len(x)), interval=1)
+    plt.show()
+
+
 
 
 #Inicijaliziramo početne parametre
-delta_t = 0.015
-x_zid, y_zid = 9, 9
+delta_t = 0.02
+x_zid, y_zid = 15, 19
 k = 0.710
 
 os.system("clear")
 
-n = int(input("Odaberite broj loptica: "))
-loptice = glavni_program(n)
+#simulacija_vise_loptica()
 
 
+#Optimalna loptica
+
+v = np.arange(10,40,0.1)
+theta = 35
+d = np.zeros(v.shape)
+lopte = []
+for i in range(len(v)):
+    lop = Lopta(x0 = 0, y0 = 2, v0 = v[i], theta0 = theta)
+    lopte.append(lop)
+    x, y = lop.simulacija()
+    d[i] = lop.greska
+argmin = np.argmin(np.absolute(d))
+najbolja_lopta = Lopta(x0 = 0, y0 = 2, v0 = v[argmin], theta0 = theta)
+animiraj_loptu(najbolja_lopta)
+print(najbolja_lopta.y)
+
+
+
+
+
+
+
+
+
+
+'''
+
+fig, ax = plt.subplots()
+ax.set_xlim(0, 10)
+ax.set_ylim(0, 10)
+#Crtamo zid
+ax.plot([x_zid, x_zid], [0,y_zid], color = "black", linewidth = 5)
+
+#Crtamo pravac y = y0
+ax.plot([0, x_zid], [2, 2], color = "red", linestyle = "dashed")
+putanja, = ax.plot(x[0], y[0], '-o', color = "red", markersize = 5)
+
+def update(frame):
+    novi_x = x[frame]
+    novi_y = y[frame]
+    putanja.set_data(novi_x, novi_y)
+
+animation = FuncAnimation(fig, update, frames=range(len(x)), interval=1)
+plt.show()
+'''
