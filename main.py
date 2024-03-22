@@ -39,7 +39,7 @@ class Lopta:
         
         while True:
 
-            if self.x <= x_zid and self.y >= 0.1:
+            if self.x <= x_zid and self.x >= 0 and self.y >= 0.1:
                 x_lista.append(x_lista[-1] + delta_t*vx0)
                 vy_lista.append(vy_lista[-1] + delta_t*(-9.81))
                 y_lista.append(y_lista[-1] + delta_t*vy_lista[-1])
@@ -56,7 +56,7 @@ class Lopta:
                 self.theta = calc_theta(vx, vy)
                 break
             
-            else:
+            elif self.y < 0.1:
                 x_lista.pop()
                 y_lista.pop()
                 self.x, self.y = x_lista[-1], y_lista[-1]
@@ -64,6 +64,9 @@ class Lopta:
                 vx = vx0
                 self.v = sqrt(vy**2 + vx**2)
                 self.theta = calc_theta(vx, vy)
+                break
+
+            else:
                 break
                 
         return x_lista, y_lista
@@ -122,6 +125,8 @@ def glavni_program(n):
 
     plt.show()
 
+    return loptice
+
 
 #Inicijaliziramo početne parametre
 delta_t = 0.015
@@ -131,5 +136,6 @@ k = 0.710
 os.system("clear")
 
 n = int(input("Odaberite broj loptica: "))
-glavni_program(n)
+loptice = glavni_program(n)
+
 
