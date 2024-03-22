@@ -4,8 +4,6 @@ from matplotlib.animation import FuncAnimation
 from matplotlib.patches import Circle
 from math import ceil, sin, cos, radians, degrees, sqrt, atan
 
-k = 0.7
-x_zid, y_zid = 9,9
 
 def calc_theta(vx, vy):
     if vy > 0 and vx > 0:
@@ -46,7 +44,7 @@ class Lopta:
         
         while True:
 
-            if self.x <= x_zid and self.y >= 0:
+            if self.x <= x_zid and self.y >= 0.1:
                 x_lista.append(x_lista[-1] + delta_t*vx0)
                 vy_lista.append(vy_lista[-1] + delta_t*(-9.81))
                 y_lista.append(y_lista[-1] + delta_t*vy_lista[-1])
@@ -100,14 +98,18 @@ ax.add_patch(krug)
 ax.set_aspect('equal', adjustable='box')
 '''
 
-lopta = Lopta(radijus = 0.5, x0 = 0, y0 = 2, v0 = 10, theta = 45)
+
 
 #Inicijaliziramo početne parametre
 delta_t = 0.015
+x_zid, y_zid = 9, 9
+k = 0.7
 
 t_start = 0
 t_end = 2
 num_it = ceil((t_end-t_start)/delta_t)
+
+lopta = Lopta(radijus = 0.5, x0 = 0, y0 = 2, v0 = 10, theta = 45)
 
 x,y = lopta.simulacija()
 print(lopta.x, lopta.y)
@@ -116,21 +118,19 @@ ax.set_xlim(0, 10)
 ax.set_ylim(0, 10)
 
 #Crtamo zid
-x_zid = 9
-y_zid = 9
 ax.plot([x_zid, x_zid], [0,y_zid], color = "black", linewidth = 5)
 
-putanja, = ax.plot(x[0], y[0], '-o', color = "red", markersize = 0.5)
+putanja, = ax.plot(x[0], y[0], '-o', color = "red", markersize = 5)
 
 def update(frame):
     global putanja
     
-    novi_x = x[:frame]
-    novi_y = y[:frame]
+    novi_x = x[frame]
+    novi_y = y[frame]
     putanja.set_data(novi_x, novi_y)
 
     
 
-animation = FuncAnimation(fig, update, frames=range(100000), interval=1)
+animation = FuncAnimation(fig, update, frames=range(300), interval=1)
 
 plt.show()
