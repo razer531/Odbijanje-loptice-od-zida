@@ -39,10 +39,11 @@ class Lopta:
         vx, vy = self.v*cos(radians(self.theta)), self.v*sin(radians(self.theta))
 
         if self.x <= x_zid-0.2 and self.x >= 0 and self.y >= 0.3:
-            vx = vx
-            vy += delta_t * (-9.81)
+            
             self.x += delta_t*vx
             self.y += delta_t*vy
+            vx = vx
+            vy += delta_t * (-9.81)
             self.v = sqrt(vy**2 + vx**2)
             self.theta = calc_theta(vx, vy)
 
@@ -77,7 +78,7 @@ class Lopta:
             
     def simulacija(self, animiraj = False):
         
-        while self.x >= 0 and self.v > 1:
+        while self.v > 1 and self.x >= 0:
             self.update()
         
         self.greska = self.y - self.povijest["y_pov"][0]
@@ -87,15 +88,14 @@ class Lopta:
             x, y = self.povijest["x_pov"], self.povijest["y_pov"]
 
             fig, ax = plt.subplots()
-            ax.set_xlim(-1, 20)
+            ax.set_xlim(0, 20)
             ax.set_ylim(0, 20)
             
-            #Crtamo zidove
+            #Crtamo zid
             ax.plot([x_zid, x_zid], [0,y_zid], color = "black", linewidth = 3)
-            ax.plot([0, 0], [0,y_zid], color = "black", linewidth = 3)
 
             #Crtamo pravac y = y0
-            ax.plot([0, x_zid], [2, 2], color = "red", linestyle = "dashed")
+            ax.plot([0, x_zid], [y0, y0], color = "red", linestyle = "dashed")
             putanja, = ax.plot(x[0], y[0], '-o', color = "red", markersize = 5)
 
             def update(frame):
@@ -106,30 +106,18 @@ class Lopta:
             animation = FuncAnimation(fig, update, frames=range(len(x)), interval=1)
             plt.show()
 
-#Optimalna loptica
-def optimalna_loptica(theta):
-    v = np.arange(10,40,0.1)
-    d = np.zeros(v.shape)
-    lopte = []
-    for i in range(len(v)):
-        lop = Lopta(x0 = 0, y0 = 2, v0 = v[i], theta0 = theta)
-        lopte.append(lop)
-        lop.simulacija()
-        d[i] = lop.greska
-    argmin = np.argmin(np.absolute(d))
-    najbolja_lopta = Lopta(x0 = 0, y0 = 2, v0 = v[argmin], theta0 = theta)
-    
-    return najbolja_lopta
+
 
 
 #Inicijaliziramo početne parametre
-delta_t = 0.02
+delta_t = 0.04
 x_zid, y_zid = 15, 19
-theta = 45
+y0 = 2
+theta0 = 45
 k = 0.7
 os.system("clear")
 
-lopta = Lopta(x0 = 0, y0 = 4, v0 = 13, theta0 = 45)
+lopta = Lopta(x0 = 0, y0 = y0, v0 = 63.5, theta0 = 70)
 lopta.simulacija(animiraj = True)
 
 

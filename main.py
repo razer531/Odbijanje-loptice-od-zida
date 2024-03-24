@@ -84,7 +84,7 @@ class Lopta:
     def simulacija(self):
         x_lista, y_lista = [], []
         
-        while self.x >=0:
+        while self.x >=0 and self.v > 1:
             x_c, y_c = self.kreiraj_putanju()
             x_lista.extend(x_c)
             y_lista.extend(y_c)
@@ -182,7 +182,7 @@ delta_t = 0.025
 x_zid, y_zid = 15, 19
 k = 0.7
 os.system("clear")
-animacija_optimalne_loptice(0)
+animacija_vise_loptica()
 
 
 
