@@ -27,6 +27,7 @@ class Lopta:
         self.theta = theta0 #kut nagiba
         self.v = v0
         self.greska = 0 #odstupanje loptice od početne visine kad se vrati na x = 0
+
         
     def kreiraj_putanju(self):
 
@@ -35,6 +36,9 @@ class Lopta:
     #Vrijednosti x i y, kao i vy, računate su Eulerovom metodom. vx posebno ne računamo jer je ono 
     #konstatno za danu putanju.
 
+        
+        
+        
         vx0, vy0 = self.v*cos(radians(self.theta)), self.v*sin(radians(self.theta))
         
         vy_lista = [vy0]
@@ -80,7 +84,7 @@ class Lopta:
     def simulacija(self):
         x_lista, y_lista = [], []
         
-        while self.x >=0:
+        while self.x >=0 and self.v > 1:
             x_c, y_c = self.kreiraj_putanju()
             x_lista.extend(x_c)
             y_lista.extend(y_c)
@@ -104,7 +108,7 @@ def animacija_vise_loptica(): #n je broj loptica
         lopte.append(lopta)
 
     fig, ax = plt.subplots()
-    ax.set_xlim(0, 30)
+    ax.set_xlim(0, 20)
     ax.set_ylim(0, 10)
 
     #Crtamo zid
@@ -141,7 +145,7 @@ def animiraj_loptu(lopta):
 
     fig, ax = plt.subplots()
     ax.set_xlim(0, 20)
-    ax.set_ylim(0, 20)
+    ax.set_ylim(0, 30)
     #Crtamo zid
     ax.plot([x_zid, x_zid], [0,y_zid], color = "black", linewidth = 5)
 
@@ -158,33 +162,27 @@ def animiraj_loptu(lopta):
     plt.show()
 
 
+#Optimalna loptica
+def animacija_optimalne_loptice(theta):
+    v = np.arange(10,40,0.1)
+    d = np.zeros(v.shape)
+    lopte = []
+    for i in range(len(v)):
+        lop = Lopta(x0 = 0, y0 = 2, v0 = v[i], theta0 = theta)
+        lopte.append(lop)
+        x, y = lop.simulacija()
+        d[i] = lop.greska
+    argmin = np.argmin(np.absolute(d))
+    najbolja_lopta = Lopta(x0 = 0, y0 = 2, v0 = v[argmin], theta0 = theta)
+    animiraj_loptu(najbolja_lopta)
 
 
 #Inicijaliziramo početne parametre
-delta_t = 0.02
+delta_t = 0.025
 x_zid, y_zid = 15, 19
-k = 0.710
-
+k = 0.7
 os.system("clear")
-
-#simulacija_vise_loptica()
-
-
-#Optimalna loptica
-
-v = np.arange(10,40,0.1)
-theta = 35
-d = np.zeros(v.shape)
-lopte = []
-for i in range(len(v)):
-    lop = Lopta(x0 = 0, y0 = 2, v0 = v[i], theta0 = theta)
-    lopte.append(lop)
-    x, y = lop.simulacija()
-    d[i] = lop.greska
-argmin = np.argmin(np.absolute(d))
-najbolja_lopta = Lopta(x0 = 0, y0 = 2, v0 = v[argmin], theta0 = theta)
-animiraj_loptu(najbolja_lopta)
-print(najbolja_lopta.y)
+animacija_vise_loptica()
 
 
 
