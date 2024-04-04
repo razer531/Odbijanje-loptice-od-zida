@@ -18,7 +18,7 @@ def calc_theta(vx, vy):
 #Kreiramo klasu lopta 
 
 class Lopta:
-    global k, delta_t, x_zid, mu
+    global k, delta_t, x_zid, lambdaa
     
     def __init__(self, x0, y0, v0, theta0):
 
@@ -37,7 +37,7 @@ class Lopta:
     def update(self):
         vx, vy = self.v*cos(radians(self.theta)), self.v*sin(radians(self.theta))
 
-        #Otpor zraka
+        #Pomak u letu
         if self.x <= x_zid-0.2 and self.x >= 0 and self.y >= 0.3:
             
             self.x += delta_t*vx
@@ -108,7 +108,9 @@ class Lopta:
             ax.set_aspect("equal")
             ax.tick_params(axis = "y", length = 5)
             ax.tick_params(axis = "y", length = 5)
-            ax.set_title(label = r"Početni kut: ${:.0f}^\circ$".format(self.povijest["theta_pov"][0]) + "\nOptimalna početna brzina: {:.2f}".format(self.povijest["v_pov"][0]), fontweight="bold")
+            ax.set_title(label = r"Početni kut: ${:.0f}^\circ$".format(self.povijest["theta_pov"][0]) + 
+                         "\nOptimalna početna brzina: {:.2f}".format(self.povijest["v_pov"][0]), 
+                         fontweight="bold")
 
 
             def update(frame):
@@ -125,10 +127,8 @@ class Lopta:
 def optimalna_loptica(theta):
     v = np.arange(2,1000,0.1)
     d = np.zeros(v.shape)
-    lopte = []
     for i in range(len(v)):
         lop = Lopta(x0 = 0, y0 = y0, v0 = v[i], theta0 = theta)
-        lopte.append(lop)
         lop.simulacija()
         d[i] = lop.greska
     argmin = np.argmin(np.absolute(d))
@@ -140,7 +140,7 @@ os.system("clear")
 #Inicijaliziramo početne parametre
 k = 0.7
 delta_t = 0.02
-lambdaa = 0.7
+lambdaa = 0.0003
 
 y0 = 2
 theta0 = float(input("Odaberite početni kut: "))
