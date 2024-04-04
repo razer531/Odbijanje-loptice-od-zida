@@ -2,7 +2,7 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
-from math import sin, cos, radians, degrees, sqrt, atan, floor
+from math import sin, cos, radians, degrees, sqrt, atan
 
 
 def calc_theta(vx, vy):
@@ -18,7 +18,7 @@ def calc_theta(vx, vy):
 #Kreiramo klasu lopta 
 
 class Lopta:
-    global k, delta_t, x_zid
+    global k, delta_t, x_zid, mu
     
     def __init__(self, x0, y0, v0, theta0):
 
@@ -37,12 +37,13 @@ class Lopta:
     def update(self):
         vx, vy = self.v*cos(radians(self.theta)), self.v*sin(radians(self.theta))
 
+        #Otpor zraka
         if self.x <= x_zid-0.2 and self.x >= 0 and self.y >= 0.3:
             
             self.x += delta_t*vx
             self.y += delta_t*vy
-            vx = vx
-            vy += delta_t * (-9.81)
+            vx += delta_t * (-lambdaa * vx)
+            vy += delta_t * (-9.81 - lambdaa*vy)
             self.v = sqrt(vy**2 + vx**2)
             self.theta = calc_theta(vx, vy)
 
@@ -134,13 +135,12 @@ def optimalna_loptica(theta):
     najbolja_lopta = Lopta(x0 = 0, y0 = 2, v0 = v[argmin], theta0 = theta)
     return najbolja_lopta
 
-
-
 os.system("clear")
 
 #Inicijaliziramo početne parametre
 k = 0.7
 delta_t = 0.02
+lambdaa = 0.7
 
 y0 = 2
 theta0 = float(input("Odaberite početni kut: "))
