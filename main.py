@@ -18,7 +18,7 @@ def calc_theta(vx, vy):
 #Kreiramo klasu lopta 
 
 class Lopta:
-    global k, delta_t, x_zid, lambdaa
+    global k, g, delta_t, x_zid, lambdaa
     
     def __init__(self, x0, y0, v0, theta0):
 
@@ -43,7 +43,7 @@ class Lopta:
             self.x += delta_t*vx
             self.y += delta_t*vy
             vx += delta_t * (-lambdaa * vx)
-            vy += delta_t * (-9.81 - lambdaa*vy)
+            vy += delta_t * (-g - lambdaa*vy)
             self.v = sqrt(vy**2 + vx**2)
             self.theta = calc_theta(vx, vy)
 
@@ -141,6 +141,7 @@ os.system("clear")
 k = 0.7
 delta_t = 0.02
 lambdaa = 0.0003
+g = 9.81
 
 y0 = 2
 theta0 = float(input("Odaberite početni kut: "))
