@@ -1,2 +1,2 @@
-# Odbijanje-loptice-od-zida
+# Ball bouncing off a vertical wall
 Seminarski rad
