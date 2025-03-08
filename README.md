@@ -13,8 +13,6 @@ This Python script simulates the motion of a ball bouncing in the presence of ai
 The script requires the following Python libraries:
 - `numpy` for numerical computations.
 - `matplotlib` for visualization and animation.
-- `os` for clearing the terminal.
-- `math` for trigonometric and mathematical functions.
 
 ## Output
 - A plot showing the ball's trajectory, the ground, and the vertical wall.
